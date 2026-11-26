@@ -7,49 +7,54 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const LINE =
+const JOKE_LINE =
   "I entered a hot-dog eating contest to impress my date \u2014 I won, threw up on her shoes, and she married the guy who came second because he 'knew when to stop.'";
 
-// The pick, per skill humor-one-liner: the twist lands in the last words
-// ("she married the guy who came second because he 'knew when to stop'") —
-// the narrator WINS the contest and still loses the date, to the runner-up,
-// for the very restraint he lacked. Three beats escalate (entered to impress
-// -> won -> threw up on her shoes) and the final beat reverses the outcome.
-// The narrator self-owns (the "victory" is the humiliation); two concrete
-// images collide (hot-dog contest vs. wedding); nothing explains the joke.
-// Setup:punchline is 19:13 words (1.5:1); the punchline is a quote, so the
-// C3 length check (quote exempts a long punchline) passes. No number is left
-// unpaid (there is none); no saturated field theme is used (therapist,
-// smartwatch 10,000 steps, GPS, AI assistant, Roomba, houseplants, printer,
-// fridge, smoke detector, dog/cat — all counted in the 526-entry field
-// snapshot 26 Nov 2026 ~11:06 WIB and avoided). O1 web search for the
-// verbatim phrase "she married the guy who came second" + "knew when to
-// stop" = 0 verbatim hits; O2 exact-duplicate check against all 526 field
-// titles in that snapshot = 0 duplicates.
+// Why this line, following skill humor-one-liner: the payoff sits in the
+// closing words ("she married the guy who came second because he 'knew when
+// to stop'") — the speaker takes first place in the contest yet still loses
+// the date to the runner-up, precisely for the self-control he did not have.
+// The joke climbs in three steps (joined to impress -> took first place ->
+// vomited on her shoes), then the last step flips the result upside down.
+// The speaker roasts himself (the "win" is itself the embarrassment); a
+// hot-dog contest and a wedding sit side by side as two vivid pictures; and
+// the joke is never spelled out. Setup to punchline runs 19 words against
+// 13 (a 1.5:1 split); because the punchline arrives as a quotation, the C3
+// length rule (a quoted punchline is exempt from the long-punchline limit)
+// is satisfied. No figure is introduced and left hanging (there is not one);
+// none of the overused field topics was picked (therapist, smartwatch
+// 10,000 steps, GPS, AI assistant, Roomba, houseplants, printer, fridge,
+// smoke detector, dog/cat — each tallied in the 526-entry field snapshot
+// from 26 Nov 2026 ~11:06 WIB and steered clear of). An O1 web search for
+// the exact wording "she married the guy who came second" plus "knew when
+// to stop" returned no verbatim matches; an O2 exact-duplicate scan across
+// all 526 field titles in that same snapshot returned no duplicates.
 
 // Gate (mirrors the house gate): UTF-8 text, 1-200 chars, not only whitespace.
-const chars = [...LINE].length;
+const chars = [...JOKE_LINE].length;
 if (chars < 1 || chars > 200) {
   throw new Error(`entry must be 1-200 characters, got ${chars}`);
 }
-if (LINE.trim().length === 0) {
+if (JOKE_LINE.trim().length === 0) {
   throw new Error("entry must not be only whitespace");
 }
-if (LINE !== LINE.trim()) {
+if (JOKE_LINE !== JOKE_LINE.trim()) {
   throw new Error("entry must not start or end with whitespace");
 }
-if (LINE.includes("\n")) {
+if (JOKE_LINE.includes("\n")) {
   throw new Error("entry must be a single line");
 }
 
-const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-mkdirSync(outDir, { recursive: true });
-const outPath = join(outDir, "entry.txt");
-writeFileSync(outPath, LINE, "utf8");
+function outputPath(outDir) { return join(outDir, "entry.txt"); }
+
+const handInDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+mkdirSync(handInDir, { recursive: true });
+const outPath = outputPath(handInDir);
+writeFileSync(outPath, JOKE_LINE, "utf8");
 
 // Read back and prove the bytes on disk match the gated string.
 const back = readFileSync(outPath, "utf8");
-if (back !== LINE) {
+if (back !== JOKE_LINE) {
   throw new Error("entry.txt on disk does not match the gated line");
 }
 console.log(`wrote ${chars} characters to ${outPath}`);
